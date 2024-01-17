@@ -6,7 +6,21 @@ import '../providers/stats.dart';
 
 class GameChart extends StatefulWidget {
   final List<Stat> data;
-  const GameChart({Key? key, required this.data}) : super(key: key);
+  final List<Stat> data2;
+  final String? selectedTeam;
+  final String? selectedTeam2;
+  final bool isComparison;
+  final bool isDiagramGenerated;
+
+  const GameChart({
+    Key? key,
+    required this.data,
+    required this.data2,
+    required this.selectedTeam,
+    required this.selectedTeam2,
+    required this.isComparison,
+    required this.isDiagramGenerated,
+  }) : super(key: key);
 
   @override
   State<GameChart> createState() => _GameChartState();
@@ -28,22 +42,34 @@ class _GameChartState extends State<GameChart> {
   }
 
   void calculateMinMaxValues() {
-    double minValue = double.infinity;
-    double maxValue = double.negativeInfinity;
+    double minCommonValue = double.infinity;
+    double maxCommonValue = double.negativeInfinity;
 
+    // Az első csapat adatainak ellenőrzése
     for (var stat in widget.data) {
-      if (stat.value < minValue) {
-        minValue = stat.value;
+      if (stat.value < minCommonValue) {
+        minCommonValue = stat.value;
       }
 
-      if (stat.value > maxValue) {
-        maxValue = stat.value;
+      if (stat.value > maxCommonValue) {
+        maxCommonValue = stat.value;
+      }
+    }
+
+    // A második csapat adatainak ellenőrzése
+    for (var stat in widget.data2) {
+      if (stat.value < minCommonValue) {
+        minCommonValue = stat.value;
+      }
+
+      if (stat.value > maxCommonValue) {
+        maxCommonValue = stat.value;
       }
     }
 
     setState(() {
-      minY = minValue;
-      maxY = maxValue;
+      minY = minCommonValue;
+      maxY = maxCommonValue;
     });
   }
 
@@ -65,6 +91,37 @@ class _GameChartState extends State<GameChart> {
             ),
           ),
         ),
+
+        // A címkék megjelenítése a diagram alatt
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildLabel(widget.selectedTeam!, Color(0xFF1d3557)),
+                if (widget.data2.isNotEmpty)
+                  _buildLabel(widget.selectedTeam2!, Colors.green),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Címke widget létrehozása
+  Widget _buildLabel(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
+        ),
+        SizedBox(width: 10),
+        Text(label),
       ],
     );
   }
@@ -72,7 +129,7 @@ class _GameChartState extends State<GameChart> {
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 14,
+      fontSize: 12,
     );
     Widget text = const Text('');
 
@@ -112,34 +169,63 @@ class _GameChartState extends State<GameChart> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 14,
+      fontSize: 12,
     );
-    // String text;
-    // switch (value.toInt()) {
-    //   case 1:
-    //     text = '10K';
-    //     break;
-    //   case 3:
-    //     text = '30k';
-    //     break;
-    //   case 5:
-    //     text = '50k';
-    //     break;
-    //   default:
-    //     return Container();
-    // }
 
-    return Text('', style: style, textAlign: TextAlign.left);
+    if (value < minY - 1 && value > maxY + 0.5) {
+      return Container();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(left: 16.0),
+      child: Text(
+        value.toStringAsFixed(0),
+        style: style,
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   LineChartData mainData() {
     calculateMinMaxValues();
+
+    List<FlSpot> selectedTeamSpots = [];
+    List<FlSpot> selectedTeam2Spots = [];
+
+    // If both teams' data are available
+    if (widget.isComparison &&
+        widget.selectedTeam2 != null &&
+        widget.data2.isNotEmpty) {
+      // The first team's data in blue
+      selectedTeamSpots = List.generate(
+        widget.data.length,
+        (index) => FlSpot(index.toDouble(), widget.data[index].value),
+      );
+
+      // The second team's data in green
+      selectedTeam2Spots = List.generate(
+        widget.data2.length,
+        (index) => FlSpot(index.toDouble(), widget.data2[index].value),
+      );
+    } else if (!widget.isComparison && widget.data.isNotEmpty) {
+      // If only the first team's data is available
+      selectedTeamSpots = List.generate(
+        widget.data.length,
+        (index) => FlSpot(index.toDouble(), widget.data[index].value),
+      );
+    }
+
+    if (!widget.isDiagramGenerated ||
+        (widget.isComparison && widget.data2.isEmpty)) {
+      return LineChartData(); // Empty chart, as no data needs to be displayed
+    }
+
     return LineChartData(
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
         horizontalInterval: 1,
-        verticalInterval: (maxY - minY) / 5,
+        verticalInterval: (maxY - minY),
         getDrawingHorizontalLine: (value) {
           return const FlLine(
             color: Colors.white,
@@ -187,14 +273,11 @@ class _GameChartState extends State<GameChart> {
       ),
       minX: 0,
       maxX: widget.data.length.toDouble() - 1,
-      minY: minY - 1,
+      minY: minY - 1.5,
       maxY: maxY * 1.1,
       lineBarsData: [
         LineChartBarData(
-          spots: List.generate(
-            widget.data.length,
-            (index) => FlSpot(index.toDouble(), widget.data[index].value),
-          ),
+          spots: selectedTeamSpots,
           isCurved: true,
           color: Color(0xFF1d3557),
           barWidth: 1,
@@ -202,11 +285,18 @@ class _GameChartState extends State<GameChart> {
           dotData: const FlDotData(
             show: false,
           ),
-          belowBarData: BarAreaData(
-            show: true,
-            color: Color.fromRGBO(230, 57, 70, 0.5),
-          ),
         ),
+        if (widget.data2.isNotEmpty)
+          LineChartBarData(
+            spots: selectedTeam2Spots,
+            isCurved: true,
+            color: Colors.green,
+            barWidth: 1,
+            isStrokeCapRound: true,
+            dotData: const FlDotData(
+              show: false,
+            ),
+          ),
       ],
     );
   }

@@ -73,10 +73,8 @@ class Auth with ChangeNotifier {
         'token': _token,
       });
       prefs.setString('userData', userData);
-    } on TimeoutException catch (error) {
-      throw error;
-    } catch (error) {
-      throw error;
+    } on TimeoutException {
+      rethrow;
     }
   }
 

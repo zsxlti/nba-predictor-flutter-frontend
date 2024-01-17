@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../providers/stats.dart';
 import '../providers/games.dart';
+import '../providers/comparison.dart';
 
 import './screens/authentication_screen.dart';
 import './screens/tab_screen.dart';
@@ -26,6 +27,9 @@ class NbaPredictor extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => Games(),
         ),
+        // ChangeNotifierProvider(
+        //   create: (_) => Comparison(),
+        // ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

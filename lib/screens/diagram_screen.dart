@@ -11,6 +11,7 @@ class DiagramScreen extends StatefulWidget {
 
 class _DiagramScreenState extends State<DiagramScreen> {
   String? _selectedTeam;
+  String? _selectedTeam2;
   String? _selectedSeason;
   String? _selectedType;
 
@@ -93,6 +94,7 @@ class _DiagramScreenState extends State<DiagramScreen> {
   };
 
   bool _isDiagramGenerated = false;
+  bool _isComparison = false;
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +129,29 @@ class _DiagramScreenState extends State<DiagramScreen> {
               },
             ),
             SizedBox(height: 20),
+            DropdownButton<String>(
+              isExpanded: true,
+              hint: _selectedTeam2 == null
+                  ? Text('Please select a second team for comparison(optional)')
+                  : Text(
+                      _selectedTeam2!,
+                      style: TextStyle(color: Color(0xFF1d3557)),
+                    ),
+              items: teams.keys.map((value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  _selectedTeam2 = value;
+                });
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
             DropdownButton<String>(
               isExpanded: true,
               hint: _selectedSeason == null
@@ -181,15 +206,32 @@ class _DiagramScreenState extends State<DiagramScreen> {
               ),
               onPressed: (_selectedTeam != null &&
                       _selectedSeason != null &&
-                      _selectedType != null)
+                      _selectedType != null &&
+                      _selectedTeam != _selectedTeam2)
                   ? () async {
-                      await context.read<Diagram>().fetchStatistics(
-                          seasonId: _selectedSeason!,
-                          teamId: teams[_selectedTeam]!,
-                          statType: types[_selectedType]!);
-                      setState(() {
-                        _isDiagramGenerated = true;
-                      });
+                      if (_selectedTeam2 == null) {
+                        await context.read<Diagram>().fetchStatistics(
+                              seasonId: _selectedSeason!,
+                              teamId: teams[_selectedTeam]!,
+                              statType: types[_selectedType]!,
+                            );
+                        setState(() {
+                          _isComparison = false;
+                          _isDiagramGenerated = true;
+                        });
+                      } else {
+                        await context.read<Diagram>().fetchStatisticsComparison(
+                              seasonId: _selectedSeason!,
+                              teamId: teams[_selectedTeam]!,
+                              teamId2: teams[_selectedTeam2]!,
+                              statType: types[_selectedType]!,
+                            );
+                        setState(() {
+                          _isComparison = true;
+                          _isDiagramGenerated = true;
+                        });
+                      }
+                      // Remove the redundant setState() block here
                     }
                   : null,
               child: Text(
@@ -199,7 +241,6 @@ class _DiagramScreenState extends State<DiagramScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              // New Clear button
               style: ElevatedButton.styleFrom(
                 fixedSize: Size(120, 40),
                 backgroundColor: Colors.grey,
@@ -208,6 +249,11 @@ class _DiagramScreenState extends State<DiagramScreen> {
                   ? () {
                       context.read<Diagram>().clearStatistics();
                       setState(() {
+                        _selectedTeam = null;
+                        _selectedTeam2 = null;
+                        _selectedSeason = null;
+                        _selectedType = null;
+                        _isComparison = false;
                         _isDiagramGenerated = false;
                       });
                     }
@@ -235,7 +281,14 @@ class _DiagramScreenState extends State<DiagramScreen> {
                         boundaryMargin: const EdgeInsets.all(20.0),
                         minScale: 0.1,
                         maxScale: 3.6,
-                        child: GameChart(data: value.stats),
+                        child: GameChart(
+                          data: value.stats,
+                          data2: value.comparedStats,
+                          selectedTeam: _selectedTeam,
+                          selectedTeam2: _selectedTeam2,
+                          isComparison: _isComparison,
+                          isDiagramGenerated: _isDiagramGenerated,
+                        ),
                       ),
                     );
                   }

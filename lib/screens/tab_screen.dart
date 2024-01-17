@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 
 import './diagram_screen.dart';
-import './prediction_screen.dart';
 import './statistics_screen.dart';
+import './comparison_screen.dart';
 
 class Page {
   final Widget body;
@@ -65,23 +65,24 @@ class _TabScreenState extends State<TabScreen> {
         ),
       ),
       Page(
-        body: PredictionScreen(),
+        body: StatisticsScreen(),
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Prediction'),
+          title: const Text('Statistics'),
           actions: [
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () => _logoutAndRedirect(context),
+              color: Color(0xFFf1faee),
             ),
           ],
         ),
       ),
       Page(
-        body: StatisticsScreen(),
+        body: ComparisonScreen(),
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Statistics'),
+          title: const Text('Comparison'),
           actions: [
             IconButton(
               icon: Icon(Icons.logout),
@@ -118,12 +119,12 @@ class _TabScreenState extends State<TabScreen> {
             label: 'Diagram',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.online_prediction),
-            label: 'Prediction',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.analytics),
             label: 'Statistics',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.compare_arrows_outlined),
+            label: 'Comparison',
           ),
         ],
       ),
