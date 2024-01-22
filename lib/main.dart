@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../providers/stats.dart';
 import '../providers/games.dart';
-import '../providers/comparison.dart';
+import '../providers/comparisons.dart';
 
 import './screens/authentication_screen.dart';
 import './screens/tab_screen.dart';
@@ -27,9 +27,9 @@ class NbaPredictor extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => Games(),
         ),
-        // ChangeNotifierProvider(
-        //   create: (_) => Comparison(),
-        // ),
+        ChangeNotifierProvider(
+          create: (_) => Comparisons(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -40,6 +40,7 @@ class NbaPredictor extends StatelessWidget {
             accentColor: const Color(0xffe63946),
           ),
           appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.blueGrey,
             titleTextStyle: TextStyle(
               color: Color(0xFFf1faee),
               fontSize: 20,

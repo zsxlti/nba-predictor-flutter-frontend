@@ -60,6 +60,7 @@ class _TabScreenState extends State<TabScreen> {
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () => _logoutAndRedirect(context),
+              color: Color(0xFFf1faee),
             ),
           ],
         ),

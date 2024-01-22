@@ -147,7 +147,7 @@ class Games with ChangeNotifier {
             fga_away: value['fga_away'],
             fgm_away: value['fgm_away']));
       }
-      //print(_seasonGames);
+      print(_seasonGames);
       notifyListeners();
     } else {
       print(response.statusCode);

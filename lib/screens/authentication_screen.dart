@@ -295,8 +295,8 @@ class _AuthCardState extends State<AuthCard>
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                ),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blueGrey),
                 onPressed: _submit,
                 child: Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
               ),

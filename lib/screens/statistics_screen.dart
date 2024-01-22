@@ -125,6 +125,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           children: [
             DropdownButton<String>(
               isExpanded: true,
+              dropdownColor: Color(0xFFf1faee),
               hint: selectedTeam1 == null
                   ? Text('Please select a team')
                   : Text(
@@ -150,6 +151,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
             DropdownButton<String>(
               isExpanded: true,
+              dropdownColor: Color(0xFFf1faee),
               hint: selectedTeam2 == null
                   ? Text('Please select another team')
                   : Text(
@@ -175,6 +177,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Expanded(
                   child: DropdownButton<String>(
+                    dropdownColor: Color(0xFFf1faee),
                     hint: Text('Please select a season (optional)'),
                     value: selectedSeason,
                     style: const TextStyle(color: Color(0xFF1d3557)),

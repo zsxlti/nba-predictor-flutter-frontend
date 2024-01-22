@@ -107,6 +107,7 @@ class _DiagramScreenState extends State<DiagramScreen> {
           children: <Widget>[
             SizedBox(height: 20),
             DropdownButton<String>(
+              dropdownColor: Color(0xFFf1faee),
               isExpanded: true,
               hint: _selectedTeam == null
                   ? Text('Please select a team')
@@ -130,6 +131,7 @@ class _DiagramScreenState extends State<DiagramScreen> {
             ),
             SizedBox(height: 20),
             DropdownButton<String>(
+              dropdownColor: Color(0xFFf1faee),
               isExpanded: true,
               hint: _selectedTeam2 == null
                   ? Text('Please select a second team for comparison(optional)')
@@ -153,6 +155,7 @@ class _DiagramScreenState extends State<DiagramScreen> {
               height: 20,
             ),
             DropdownButton<String>(
+              dropdownColor: Color(0xFFf1faee),
               isExpanded: true,
               hint: _selectedSeason == null
                   ? Text('Please select a season')
@@ -178,6 +181,7 @@ class _DiagramScreenState extends State<DiagramScreen> {
               height: 20,
             ),
             DropdownButton<String>(
+              dropdownColor: Color(0xFFf1faee),
               isExpanded: true,
               hint: _selectedType == null
                   ? Text('Please select a stattype')
